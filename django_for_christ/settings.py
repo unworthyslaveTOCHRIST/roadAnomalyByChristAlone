@@ -25,6 +25,11 @@ SECRET_KEY = 'django-insecure-65=f9sxyhzuh-jh2y3j@%o8bx4_yx#iimb9ma2_+!+y2(q7(hj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Graciously allowing an origin-domain
+CSRF_TRUSTED_ORIGINS = [
+    'https://roadanomaly4christalone-d0b8esbucpenbdd7.canadacentral-01.azurewebsites.net',
+]
+
 ALLOWED_HOSTS = ["localhost", "10.0.2.2", "roadanomaly4christalone.pythonanywhere.com","127.0.0.1", "roadanomaly4christalone-d0b8esbucpenbdd7.canadacentral-01.azurewebsites.net", "20.48.204.7",]
 
 
