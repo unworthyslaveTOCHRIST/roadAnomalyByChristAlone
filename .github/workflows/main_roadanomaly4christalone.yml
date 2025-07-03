@@ -24,18 +24,28 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-      
+      - name: Create virtual environment
+        run: python -m venv venv
+
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Collect static files
+        run: |
+          source venv/bin/activate
+          python manage.py collectstatic --noinput
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+      - name: Zip Django project for deployment
+        run: |
+          zip -r release.zip . \
+          -x "venv/*" \
+          -x ".git/*" \
+          -x ".github/*" \
+          -x "__pycache__/*"
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -60,7 +70,10 @@ jobs:
           name: python-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip
+        run: unzip -o release.zip -d .
+
+      - name: Debug - list workspace contents
+        run: ls -laR
 
       
       - name: Login to Azure
@@ -76,4 +89,5 @@ jobs:
         with:
           app-name: 'roadAnomaly4ChristAlone'
           slot-name: 'Production'
+          package: release.zip
           
