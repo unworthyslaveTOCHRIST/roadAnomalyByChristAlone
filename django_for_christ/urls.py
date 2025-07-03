@@ -23,7 +23,6 @@ from django.http import HttpResponse
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('<path:path>', lambda request, path: HttpResponse(f'You requested: /{path}')),
     path("api-road-in/", include("RoadAnomalyInput.urls")),
     path("api-road-manual-data-collection/", include("RoadAnomalyManualDataCollection.urls")),
     path("api-road-inference-logs/", include("RoadAnomalyInferenceLogs.urls")),
