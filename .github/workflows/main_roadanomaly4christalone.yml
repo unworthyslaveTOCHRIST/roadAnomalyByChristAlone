@@ -86,4 +86,5 @@ jobs:
         with:
           app-name: 'roadAnomaly4ChristAlone'
           slot-name: 'Production'
+          package: .
           
