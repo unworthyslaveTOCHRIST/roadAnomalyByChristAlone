@@ -3,3 +3,4 @@ djangorestframework
 scikit-learn
 pandas
 joblib
+whitenoise
