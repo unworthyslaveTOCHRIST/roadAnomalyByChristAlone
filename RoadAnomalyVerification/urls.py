@@ -30,9 +30,18 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
 
 
         if raw_data == "accept":
+
+            # To Graciously later include inference data into RoadAnomalyInput grouping identical instances first
+            # Then Graciously delete all inference data and associated predictions
             return Response(f"Verification message received:{raw_data}", status = status.HTTP_200_OK)  
+            
+            
+
         elif raw_data == "reject":
+
+            # To only Graciously delete all inference data and associated predictions
             return Response(f"Verification message received:{raw_data}", status = status.HTTP_200_OK)  
+        
 
         # serializer = self.get_serializer(data=request.data, many=True)
         # serializer.is_valid(raise_exception=True)
