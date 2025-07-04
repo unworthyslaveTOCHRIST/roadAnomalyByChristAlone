@@ -91,7 +91,7 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             full_serializer = self.get_serializer(queryset, many = True)
 
             # RoadAnomalyInferenceLogs.objects.all().delete()       
-            return Response(full_serializer, status = status.HTTP_200_OK)
+            return Response(full_serializer.data, status = status.HTTP_200_OK)
 
         else:
             return Response(f"Invalid received request: {raw_data}", status=201)
