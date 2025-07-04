@@ -87,9 +87,11 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
                 serializer.is_valid(raise_exception = True)
                 serializer.save()
 
-            # RoadAnomalyInferenceLogs.objects.all().delete()
-            prediction_count = RoadAnomalyPredictionOutput.objects.count()
-            return Response(f"No of predictions graciously available: {prediction_count}", status=status.HTTP_200_OK)
+            queryset = RoadAnomalyPredictionOutput.objects.all().order_by("id")
+            full_serializer = self.get_serializer(queryset, many = True)
+
+            # RoadAnomalyInferenceLogs.objects.all().delete()       
+            return Response(full_serializer, status = status.HTTP_200_OK)
 
         else:
             return Response(f"Invalid received request: {raw_data}", status=201)
