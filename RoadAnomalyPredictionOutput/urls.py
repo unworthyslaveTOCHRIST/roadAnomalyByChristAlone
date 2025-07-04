@@ -18,7 +18,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
-MODEL_PATH = "/home/roadAnomaly4ChristAlone/django_for_christ/RoadAnomalyPredictionOutput/road_anomaly_model.pkl"
+MODEL_PATH = "/tmp/8ddba6a1540cb1f/RoadAnomalyPredictionOutput/road_anomaly_model.pkl"
 
 
 class RoadAnomalyPredictionOutputSerializer(serializers.ModelSerializer):
