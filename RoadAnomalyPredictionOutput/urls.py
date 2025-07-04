@@ -18,7 +18,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
-MODEL_PATH = "/tmp/8ddba6a1540cb1f/RoadAnomalyPredictionOutput/road_anomaly_model.pkl"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH  = os.path.join(BASE_DIR, 'RoadAnomalyPredictionOutput', 'road_anomaly_model.pkl')
 
 
 class RoadAnomalyPredictionOutputSerializer(serializers.ModelSerializer):
