@@ -49,7 +49,8 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
                 return Response("Model file missing.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             clf = joblib.load(MODEL_PATH)
-
+            
+            # To later include a tempo-spatial feature-engineering pipeline based on the inference data
             inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
             df = pd.DataFrame(inference_data)
             if df.empty:
