@@ -3,7 +3,6 @@ djangorestframework
 scikit-learn
 pandas
 numpy
-collections
 imblearn
 whitenoise
 plotly
@@ -15,3 +14,4 @@ sktime
 torch
 tensorflow
 joblib
+collections
