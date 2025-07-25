@@ -14,4 +14,3 @@ sktime
 torch
 tensorflow
 joblib
-collections
