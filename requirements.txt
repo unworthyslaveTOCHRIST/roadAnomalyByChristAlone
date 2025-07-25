@@ -4,7 +4,6 @@ scikit-learn
 pandas
 numpy
 joblib
-matplotlib
 collections
 imblearn
 whitenoise
