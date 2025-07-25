@@ -14,6 +14,5 @@ ahrs
 xgboost
 scipy
 sktime
-tsai
 torch
 tensorflow
