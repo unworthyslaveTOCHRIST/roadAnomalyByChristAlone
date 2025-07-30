@@ -12,14 +12,19 @@ from .parsers import PlainTextParser
 import os
 import joblib
 import pandas as pd
-
+# import django
+# import sys
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
+from .utilities import align_to_global_frame, fix_batches, apply_feature_extraction_across_all_identical_anomaly_batches
+from .utilities import ml_pipeline
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH  = os.path.join(BASE_DIR, 'RoadAnomalyPredictionOutput', 'road_anomaly_model.pkl')
+MODEL_PATH  = os.path.join(BASE_DIR, 'RoadAnomalyPredictionOutput', 'road_anomaly_model_2.pkl')
 
 
 class RoadAnomalyPredictionOutputSerializer(serializers.ModelSerializer):
@@ -48,27 +53,23 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
                 print("🚫 Model file not found.")
                 return Response("Model file missing.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            clf = joblib.load(MODEL_PATH)
-            
-            # To later include a tempo-spatial feature-engineering pipeline based on the inference data
+
+            model = joblib.load(MODEL_PATH)
             inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
             df = pd.DataFrame(inference_data)
             if df.empty:
                 return Response(f"No Inference Data, size of data => {len(raw_data)}", status=status.HTTP_400_BAD_REQUEST )
 
-            # RoadAnomalyPredictionOutput.objects.all().delete()  # Emptying away past predictions
+            # print("Gracious output:", df.shape)
+            data_globally_aligned = align_to_global_frame(df)
+            batched_df = fix_batches(data_globally_aligned)
+            engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
+            predictions = ml_pipeline(engineered_df)
+            print(predictions)
 
-            features = df[["acc_x", "acc_y", "acc_z", "rot_x", "rot_y", "rot_z", "speed"]] # Graciously getting all rows
-            predictions = clf.predict(features)
-            predictions_series = pd.Series(predictions)
-            prediction_counts = predictions_series.value_counts(normalize = True) *  100
-
-            # BY GOD'S GRACE ALONE, using the most recent batch_id (or choosing majority if mixed)
-            recent_batch_id = df["batch_id"].mode()[0] if "batch_id" in df else None
-
-            for anomaly_class, percentage in prediction_counts.items():
+            for anomaly_class, percentage in predictions.items():
                 data = {
-                    "batch_id": int(recent_batch_id),
+                    "batch_id":None,
                     "timestamp": str(datetime.now()),  # Or use str(datetime.now()) for uniform time
                     "log_interval": None,
                     "acc_x": None,
@@ -97,7 +98,6 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
         else:
             return Response(f"Invalid received request: {raw_data}", status=201)
 
-
 router = routers.DefaultRouter()
 router.register(r"road_anomaly_predict", RoadAnomalyPredictionOutputViewSet)
 
@@ -106,3 +106,13 @@ urlpatterns = [
     path("api-auth/", include('rest_framework.urls', namespace="rest_framework"))
 
 ]
+
+if __name__ == "__main__":
+    inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
+    df = pd.DataFrame(inference_data)
+    # print("Gracious output:", df.shape)
+    data_globally_aligned = align_to_global_frame(df)
+    batched_df = fix_batches(data_globally_aligned)
+    engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
+    predictions = ml_pipeline(engineered_df)
+    print(predictions)
