@@ -171,6 +171,7 @@ def extract_fft_features(signal, fs):
 
 
 def extract_features_windowed(df, fs, window_size, stride, filter_cfg=None):
+    
     features = []
     signal_columns = ['acc_x_global', 'acc_y_global', 'acc_z_global', 'rot_x_corrected', 'rot_y_corrected', 'rot_z_corrected']
     start_idxs = np.arange(0, len(df) - window_size + 1, stride)
@@ -178,6 +179,9 @@ def extract_features_windowed(df, fs, window_size, stride, filter_cfg=None):
     for start in start_idxs:
         window = df.iloc[start:start + window_size]
         feature_vector = {}
+        center_row = window.iloc[window_size // 2]
+        feature_vector["latitude"] = center_row["latitude"]
+        feature_vector["longitude"] = center_row["longitude"]
 
         for col in signal_columns:
             signal = window[col].values
@@ -259,16 +263,39 @@ import joblib
 
 
 def ml_pipeline(feature_engineered_df): 
-
     # Spliting feature-engineered inference data  
+    latitude = feature_engineered_df["latitude"]
+    longitude = feature_engineered_df["longitude"]
+    feature_engineered_df.drop(columns=["latitude","longitude"], inplace = True)
     inf_data = feature_engineered_df
-    # print("Graciously before dropping incomplete rows",inf_data.info())
+    print(inf_data.head())
+    # # print("Graciously before dropping incomplete rows",inf_data.info())
     inf_data.dropna(inplace = True)
-    # print("Graciously before dropping incomplete rows",inf_data.info())
+    # # print("Graciously before dropping incomplete rows",inf_data.info())
     model = joblib.load(MODEL_PATH)
-    predictions = pd.Series(model.predict(inf_data)).value_counts(normalize=True) * 100
+    predictions     =    pd.Series(model.predict(inf_data))
+    predictions_df  =    pd.DataFrame()
+    predictions_df["predictions"] = predictions
+    predictions_df["latitude"]  = latitude
+    predictions_df["longitude"] = longitude
 
-    return predictions
+    df_final = pd.DataFrame()
+    for location_group_id, location_group in predictions_df.groupby(["latitude","longitude"]):
+        df_per_location = pd.DataFrame()
+        location_group.reset_index()
+
+        prediction_per_location_group = location_group["predictions"].value_counts(normalize=True)
+        prediction_name = prediction_per_location_group.index
+        prediction_value = prediction_per_location_group.values
+        df_per_location["predictions"] = prediction_name
+        df_per_location["confidence"] = prediction_value
+        df_per_location["latitude"]  = location_group["latitude"].iloc[0]
+        df_per_location["longitude"]  = location_group["longitude"].iloc[0]
+
+        df_final = pd.concat([df_final,df_per_location], ignore_index=True)
+    print(type(df_final))
+
+    return df_final
 
 
 # Now imports will work
@@ -281,5 +308,5 @@ if __name__ == "__main__":
     data_globally_aligned = align_to_global_frame(df)
     batched_df = fix_batches(data_globally_aligned)
     engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
-    predictions = ml_pipeline(engineered_df)
-    print(predictions)
+    predictions_df = ml_pipeline(engineered_df)
+    print(predictions_df.head())
