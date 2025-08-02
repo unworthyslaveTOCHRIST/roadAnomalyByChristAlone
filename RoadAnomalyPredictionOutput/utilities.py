@@ -20,6 +20,7 @@ from collections import Counter
 
 from ahrs.filters import Madgwick
 from scipy.spatial.transform import Rotation as R
+import math
 
 
 
@@ -180,8 +181,8 @@ def extract_features_windowed(df, fs, window_size, stride, filter_cfg=None):
         window = df.iloc[start:start + window_size]
         feature_vector = {}
         center_row = window.iloc[window_size // 2]
-        feature_vector["latitude"] = center_row["latitude"]
-        feature_vector["longitude"] = center_row["longitude"]
+        feature_vector["latitude"] = round(center_row["latitude"],2)
+        feature_vector["longitude"] = round(center_row["longitude"],2)
 
         for col in signal_columns:
             signal = window[col].values
