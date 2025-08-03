@@ -67,7 +67,14 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             predictions = ml_pipeline(engineered_df)
             print(predictions)
 
-            for anomaly_class, percentage in predictions.items():
+            for i in predictions.shape[0]:
+                row = predictions.iloc[i]   #Graciously getting each row of prediction information
+
+                anomaly     =       row["predictions"]
+                confidence  =       row["confidence"]
+                latitude    =       row["latitude"]
+                longitude   =       row["longitude"]
+
                 data = {
                     "batch_id":None,
                     "timestamp": str(datetime.now()),  # Or use str(datetime.now()) for uniform time
@@ -78,11 +85,11 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
                     "rot_x": None,
                     "rot_y": None,
                     "rot_z": None,
-                    "latitude": None,
-                    "longitude": None,
+                    "latitude": latitude,
+                    "longitude": longitude,
                     "speed": None,
                     "accuracy": None,  # Keep this as you intended,
-                    "anomaly_prediction" : f"{anomaly_class} ({percentage:.2f}%)"
+                    "anomaly_prediction" : f"{anomaly} ({confidence:.2f}%)"
                 }
 
                 serializer = self.get_serializer(data = data)

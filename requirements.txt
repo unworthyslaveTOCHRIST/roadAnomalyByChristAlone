@@ -9,3 +9,4 @@ ahrs
 scipy
 sktime
 joblib
+#To graciously include 'torch' and 'tensorflow'
