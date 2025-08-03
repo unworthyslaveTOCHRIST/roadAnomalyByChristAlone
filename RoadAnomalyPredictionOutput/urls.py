@@ -55,23 +55,16 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
 
 
             model = joblib.load(MODEL_PATH)
-            inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
+            predictions = pd.read_csv("predictions.csv")
             df = pd.DataFrame(inference_data)
             if df.empty:
-                return Response(f"No Inference Data, size of data => {len(raw_data)}", status=status.HTTP_400_BAD_REQUEST )
+                return Response("No Predictions available", status=status.HTTP_400_BAD_REQUEST )
 
-            # print("Gracious output:", df.shape)
-            data_globally_aligned = align_to_global_frame(df)
-            batched_df = fix_batches(data_globally_aligned)
-            engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
-            predictions = ml_pipeline(engineered_df)
-            print(predictions)
-
-            for i in predictions.shape[0]:
-                row = predictions.iloc[i]   #Graciously getting each row of prediction information
+            for i in df.shape[0]:
+                row = df.iloc[i]   #Graciously getting each row of prediction information
 
                 anomaly     =       row["predictions"]
-                confidence  =       row["confidence"]
+                confidence  =       row["confidence_in_%"]
                 latitude    =       row["latitude"]
                 longitude   =       row["longitude"]
 
@@ -104,7 +97,18 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
 
         elif raw_data == "start_data_preprocessing":
 
-            
+            inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
+            df = pd.DataFrame(inference_data)
+            if df.empty:
+                return Response(f"No Inference Data, size of data => {len(raw_data)}", status=status.HTTP_400_BAD_REQUEST )
+
+            # print("Gracious output:", df.shape)
+            data_globally_aligned = align_to_global_frame(df)
+            batched_df = fix_batches(data_globally_aligned)
+            engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
+            predictions = ml_pipeline(engineered_df)
+            predictions.to_csv("predictions.csv",index=False)
+
             return Response("Gracious Inference Data Successfully Prepocessed and Ready for Prediction", status=status.HTTP_200_OK)
 
         else:

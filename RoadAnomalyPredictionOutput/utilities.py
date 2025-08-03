@@ -79,8 +79,8 @@ def align_to_global_frame(df):
     df_combined = pd.concat([df, df_global], axis=1)
 
     # Save to CSV
-    df_combined.to_csv("imu_with_global_accel.csv", index=False)
-    print("Saved processed IMU data with global acceleration as 'imu_with_global_accel.csv'")
+    df_combined.to_csv("imu_with_global_accel_2.csv", index=False)
+    print("Saved processed IMU data with global acceleration as 'imu_with_global_accel_2.csv'")
     # df_combined.head()
 
     return df_combined
@@ -289,12 +289,16 @@ def ml_pipeline(feature_engineered_df):
         prediction_name = prediction_per_location_group.index
         prediction_value = prediction_per_location_group.values
         df_per_location["predictions"] = prediction_name
-        df_per_location["confidence"] = prediction_value
+        df_per_location["confidence_in_%"] = prediction_value * 100
         df_per_location["latitude"]  = location_group["latitude"].iloc[0]
         df_per_location["longitude"]  = location_group["longitude"].iloc[0]
 
         df_final = pd.concat([df_final,df_per_location], ignore_index=True)
+
     print(type(df_final))
+    df_final.to_csv("predictions.csv", index=False)
+    print("Saved  Gracious predictions 'predictions.csv'")
+
 
     return df_final
 
@@ -311,3 +315,5 @@ if __name__ == "__main__":
     engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
     predictions_df = ml_pipeline(engineered_df)
     print(predictions_df.head())
+
+    
