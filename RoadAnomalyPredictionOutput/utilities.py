@@ -17,6 +17,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from collections import Counter
 
+from rest_framework.response import Response
+
 
 from ahrs.filters import Madgwick
 from scipy.spatial.transform import Rotation as R
@@ -265,6 +267,14 @@ import joblib
 
 def ml_pipeline(feature_engineered_df): 
     # Spliting feature-engineered inference data  
+
+    if not os.path.exists(MODEL_PATH):
+        print("🚫 Model file not found.")
+        return Response("Model file missing.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    model = joblib.load(MODEL_PATH)
+
     latitude = feature_engineered_df["latitude"]
     longitude = feature_engineered_df["longitude"]
     feature_engineered_df.drop(columns=["latitude","longitude"], inplace = True)

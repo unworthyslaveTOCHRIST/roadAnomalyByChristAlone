@@ -47,14 +47,8 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
 
         if raw_data  == "get_predictions":
 
-            # Graciously extracting inference data
+            # Graciously sending predictions over to receiving end-point
 
-            if not os.path.exists(MODEL_PATH):
-                print("🚫 Model file not found.")
-                return Response("Model file missing.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-            model = joblib.load(MODEL_PATH)
             predictions = pd.read_csv("predictions.csv")
             df = pd.DataFrame(inference_data)
             if df.empty:
