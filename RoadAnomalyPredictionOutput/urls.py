@@ -102,6 +102,11 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             # RoadAnomalyInferenceLogs.objects.all().delete()       
             return Response(full_serializer.data, status = status.HTTP_200_OK)
 
+        elif raw_data == "start_data_preprocessing":
+
+            
+            return Response("Gracious Inference Data Successfully Prepocessed and Ready for Prediction", status=status.HTTP_200_OK)
+
         else:
             return Response(f"Invalid received request: {raw_data}", status=201)
 
