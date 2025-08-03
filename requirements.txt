@@ -9,5 +9,4 @@ ahrs
 scipy
 sktime
 torch
-torch
 joblib
