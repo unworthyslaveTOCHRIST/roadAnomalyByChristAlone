@@ -47,7 +47,7 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
 
         if raw_data  == "get_predictions":
 
-            # Graciously sending predictions over to receiving end-point
+            # Graciously sending predictions over to a receiving end-point
 
             predictions = pd.read_csv("predictions.csv")
             df = pd.DataFrame(inference_data)
