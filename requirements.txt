@@ -5,12 +5,9 @@ pandas
 numpy
 imblearn
 whitenoise
-plotly
-seaborn
 ahrs
-xgboost
 scipy
 sktime
 torch
-tensorflow
+torch
 joblib
