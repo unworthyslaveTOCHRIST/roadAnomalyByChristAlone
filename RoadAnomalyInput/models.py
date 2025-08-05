@@ -7,6 +7,8 @@ from django.db import models
 class RoadAnomalyInput(models.Model):
 
     ANOMALY_CHOICES = [
+        ('no-movement', 'Car Unactuated'),
+        ('static-vibration', "Car's Stationary Vibration"),
         ('smooth', 'Smooth Segment'),
         ('crack', 'Crack Segment'),
         ('bump', 'Bump Segment'),
@@ -14,13 +16,12 @@ class RoadAnomalyInput(models.Model):
         ('pothole_mild', 'Mild Pothole Segment'),
         ('pothole_severe', 'Severe Pothole Segment'),
 
-
     ]
 
     anomaly = models.CharField(
         max_length=20,
         choices=ANOMALY_CHOICES,
-        default='no_defect',
+        default='no-movement',
         help_text="Classify the road anomaly based on severity."
     )
 
@@ -29,4 +30,4 @@ class RoadAnomalyInput(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Road Anomaly @{self.timestamp}  | Anomaly Type : {self.anomaly}"
+        return f"Road Anomaly @{self.timestamp}  | Anomaly Type : {self.anomaly} | Location {self.latitude} , {self.longitude}"

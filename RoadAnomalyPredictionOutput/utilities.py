@@ -315,15 +315,37 @@ def ml_pipeline(feature_engineered_df):
 
 # Now imports will work
 from RoadAnomalyInferenceLogs.models import RoadAnomalyInferenceLogs
+from RoadAnomalyManualDataCollection.models import RoadAnomalyManualDataCollection
+from RoadAnomalyInput.models import RoadAnomalyInput
+
+
+     
+# Graciously working purely with RoadAnomalyManualData
+def update_input_main():
+    data = RoadAnomalyManualDataCollection.objects.all().values("latitude", "longitude", "anomaly")
+    df = pd.DataFrame(data)
+    if df.empty:
+        return
+
+    grouped = df.groupby(["latitude", "longitude"]).agg(lambda x : x.mode()[0]).reset_index()
+    grouped = df.groupby(["latitude", "longitude"]).agg(lambda x : x.mode()[0]).reset_index()
+    for _,row in grouped.iterrows():
+        RoadAnomalyInput.objects.get_or_create(
+            latitude = row.latitude,
+            longitude = row.longitude,
+            anomaly = row.anomaly
+
+        )
 
 if __name__ == "__main__":
-    inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
-    df = pd.DataFrame(inference_data)
-    # print("Gracious output:", df.shape)
-    data_globally_aligned = align_to_global_frame(df)
-    batched_df = fix_batches(data_globally_aligned)
-    engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
-    predictions_df = ml_pipeline(engineered_df)
-    print(predictions_df.head())
+    # inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
+    # df = pd.DataFrame(inference_data)
+    # # print("Gracious output:", df.shape)
+    # data_globally_aligned = align_to_global_frame(df)
+    # batched_df = fix_batches(data_globally_aligned)
+    # engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
+    # predictions_df = ml_pipeline(engineered_df)
+    # print(predictions_df.head())
 
+    update_input_main()
     

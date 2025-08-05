@@ -117,12 +117,3 @@ urlpatterns = [
 
 ]
 
-if __name__ == "__main__":
-    inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
-    df = pd.DataFrame(inference_data)
-    # print("Gracious output:", df.shape)
-    data_globally_aligned = align_to_global_frame(df)
-    batched_df = fix_batches(data_globally_aligned)
-    engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
-    predictions = ml_pipeline(engineered_df)
-    print(predictions)
