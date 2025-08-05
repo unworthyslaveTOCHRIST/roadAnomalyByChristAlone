@@ -54,7 +54,7 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             if df.empty:
                 return Response("No Predictions available", status=status.HTTP_400_BAD_REQUEST )
 
-            for i in df.shape[0]:
+            for i in range(df.shape[0]):
                 row = df.iloc[i]   #Graciously getting each row of prediction information
 
                 anomaly     =       row["predictions"]
