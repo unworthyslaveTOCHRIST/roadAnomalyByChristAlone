@@ -56,7 +56,7 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
 
             for i in range(df.shape[0]):
                 row = df.iloc[i]   #Graciously getting each row of prediction information
-
+                
                 anomaly     =       row["predictions"]
                 confidence  =       row["confidence_in_%"]
                 latitude    =       row["latitude"]
@@ -90,7 +90,6 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             return Response(full_serializer.data, status = status.HTTP_200_OK)
 
         elif raw_data == "start_data_preprocessing":
-
             inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
             df = pd.DataFrame(inference_data)
             if df.empty:
