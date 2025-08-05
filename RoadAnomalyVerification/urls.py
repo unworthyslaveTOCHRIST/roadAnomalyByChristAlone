@@ -70,10 +70,10 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
             full_serializer = self.get_serializer(queryset, many = True)
 
             # RoadAnomalyInferenceLogs.objects.all().delete()       
-            return Response(full_serializer.data, status = status.HTTP_200_OK)
+            # return Response(full_serializer.data, status = status.HTTP_200_OK)
             # To Graciously later include inference data into RoadAnomalyInput grouping identical instances first
             # Then Graciously delete all inference data and associated predictions
-            return Response(f"Verification message received:{raw_data}", status = status.HTTP_200_OK)  
+            return Response(f"Verification message received, no of anomalies:{queryset.count}", status = status.HTTP_200_OK)  
             
             
 
