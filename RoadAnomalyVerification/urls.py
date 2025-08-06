@@ -68,7 +68,7 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
                 )
 
             queryset = RoadAnomalyInput.objects.all().order_by("id")
-            queryset_count_new = RoadAnomalyInput.objects.all().order_by("id").count
+            queryset_count_new = RoadAnomalyInput.objects.all().order_by("id").count()
             # full_serializer = self.get_serializer(queryset, many = True)
 
             # # RoadAnomalyInferenceLogs.objects.all().delete()       
