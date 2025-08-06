@@ -36,59 +36,47 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
 
         if raw_data == "accept":
             predictions = pd.read_csv("predictions.csv")
-            queryset_count_former = RoadAnomalyInput.objects.all().order_by("id").count
+            queryset_count_former = RoadAnomalyInput.objects.all().order_by("id").count()
             df = pd.DataFrame(predictions)
             if df.empty:
                 return Response("No Predictions available", status=status.HTTP_400_BAD_REQUEST )
 
-            bulk_entries = []
-
             for i in range(df.shape[0]):
                 row = df.iloc[i]   #Graciously getting each row of prediction information
 
-                anomaly     =       f"{row["predictions"]} {row["confidence_in_%"]}%"
+                anomaly     =       f"{row['predictions']} {row['confidence_in_%']}%"
                 latitude    =       row["latitude"]
                 longitude   =       row["longitude"]
                 timestamp   =       str(datetime.now())
 
-                # # Graciously defining lookup fields based on which duplicated-location entries are prevented
-                # lookup_fields = {
-                #     "latitude"  :   latitude,
-                #     "longitude" :   longitude
-                # }
+                # Graciously defining lookup fields based on which duplicated-location entries are prevented
+                lookup_fields = {
+                    "latitude"  :   latitude,
+                    "longitude" :   longitude
+                }
 
-                # # Graciously defining the remaining fields to update or insert
-                # defaults = {
-                #     "timestamp": timestamp,  # Or use str(datetime.now()) for uniform time              
-                #     "anomaly" : anomaly,
-                #     #To graciously include distance covered during period of observation per inference data-batch
-                # }
+                # Graciously defining the remaining fields to update or insert
+                defaults = {
+                    "timestamp": timestamp,  # Or use str(datetime.now()) for uniform time              
+                    "anomaly" : anomaly,
+                    #To graciously include distance covered during period of observation per inference data-batch
+                }
                 
-                # RoadAnomalyInput.objects.update_or_create(
-                #     **lookup_fields,
-                #     defaults=defaults
-                # )
-
-                # Graciously creating an instance of RoadAnomalyInput (not saving yet)
-                entry = RoadAnomalyInput(
-                    anomaly = anomaly,
-                    latitude = latitude,
-                    longitude = longitude,
-                    timestamp = timestamp
+                RoadAnomalyInput.objects.update_or_create(
+                    **lookup_fields,
+                    defaults=defaults
                 )
 
-                bulk_entries.append(entry)
-
-            RoadAnomalyInput.objects.bulk_create(bulk_entries)
             queryset = RoadAnomalyInput.objects.all().order_by("id")
-            queryset_count_new = queryset.count
+            queryset_count_new = RoadAnomalyInput.objects.all().order_by("id").count
             # full_serializer = self.get_serializer(queryset, many = True)
 
             # # RoadAnomalyInferenceLogs.objects.all().delete()       
             # return Response(full_serializer.data, status = status.HTTP_200_OK)
             # To Graciously later include inference data into RoadAnomalyInput grouping identical instances first
             # Then Graciously delete all inference data and associated predictions
-            return Response(f"Verification message received, no of anomalies:{queryset.count}\n No of Anomalies(prev):{queryset_count_former}, No of Anomalies(current): {queryset_count_new}", status = status.HTTP_200_OK)  
+            return Response(f"Verification message received, No of Anomalies(prev):{queryset_count_former}, No of Anomalies(current): {queryset_count_new}", 
+                            status = status.HTTP_200_OK)  
             
             
 
