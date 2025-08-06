@@ -71,11 +71,13 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
             queryset_count_new = RoadAnomalyInput.objects.all().order_by("id").count()
             # full_serializer = self.get_serializer(queryset, many = True)
 
-            # # RoadAnomalyInferenceLogs.objects.all().delete()       
-            # return Response(full_serializer.data, status = status.HTTP_200_OK)
-            # To Graciously later include inference data into RoadAnomalyInput grouping identical instances first
-            # Then Graciously delete all inference data and associated predictions
-            return Response(f"Verification message received, No of Anomalies(prev):{queryset_count_former}, No of Anomalies(current): {queryset_count_new}", 
+            RoadAnomalyInferenceLogs.objects.all().delete() 
+            inference_data_count = RoadAnomalyInferenceLogs.objects.all().count() if RoadAnomalyInferenceLogs.objects.all().count()  >  0 else "No"
+  
+            RoadAnomalyPredictionOutput.objects.all().delete() 
+            predictions_count = RoadAnomalyPredictionOutput.objects.all().count() if RoadAnomalyPredictionOutput.objects.all().count()  >  0 else "No"     
+
+            return Response(f"Verification message received, No of Anomalies(prev):{queryset_count_former}, No of Anomalies(current): {queryset_count_new}, Inference data : {inference_data_count} logs, Predictions: {predictions_count}", 
                             status = status.HTTP_200_OK)  
             
             
@@ -83,13 +85,16 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
         elif raw_data == "reject":
 
             # To only Graciously delete all inference data and associated predictions
-            return Response(f"Verification message received:{raw_data}", status = status.HTTP_200_OK)  
+            RoadAnomalyInferenceLogs.objects.all().delete() 
+            inference_data_count = RoadAnomalyInferenceLogs.objects.all().count() if RoadAnomalyInferenceLogs.objects.all().count()  >  0 else "None"
+  
+            RoadAnomalyPredictionOutput.objects.all().delete() 
+            predictions_count = RoadAnomalyPredictionOutput.objects.all().count() if RoadAnomalyPredictionOutput.objects.all().count()  >  0 else "None"     
+
+            return Response(f"Verification message received, Inference data : {inference_data_count} logs, Predictions: {predictions_count}", 
+                            status = status.HTTP_200_OK)
         
 
-        # serializer = self.get_serializer(data=request.data, many=True)
-        # serializer.is_valid(raise_exception=True)
-        # self.perform_create(serializer)
-        # return Response(serializer.data, status=201)
 
 
 router = routers.DefaultRouter()
