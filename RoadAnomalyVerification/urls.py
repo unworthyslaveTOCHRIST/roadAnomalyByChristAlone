@@ -41,6 +41,8 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
             if df.empty:
                 return Response("No Predictions available", status=status.HTTP_400_BAD_REQUEST )
 
+            bulk_entries = []
+
             for i in range(df.shape[0]):
                 row = df.iloc[i]   #Graciously getting each row of prediction information
 
@@ -49,26 +51,37 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
                 longitude   =       row["longitude"]
                 timestamp   =       str(datetime.now())
 
-                # Graciously defining lookup fields based on which duplicated-location entries are prevented
-                lookup_fields = {
-                    "latitude"  :   latitude,
-                    "longitude" :   longitude
-                }
+                # # Graciously defining lookup fields based on which duplicated-location entries are prevented
+                # lookup_fields = {
+                #     "latitude"  :   latitude,
+                #     "longitude" :   longitude
+                # }
 
-                # Graciously defining the remaining fields to update or insert
-                defaults = {
-                    "timestamp": timestamp,  # Or use str(datetime.now()) for uniform time              
-                    "anomaly" : anomaly,
-                    #To graciously include distance covered during period of observation per inference data-batch
-                }
+                # # Graciously defining the remaining fields to update or insert
+                # defaults = {
+                #     "timestamp": timestamp,  # Or use str(datetime.now()) for uniform time              
+                #     "anomaly" : anomaly,
+                #     #To graciously include distance covered during period of observation per inference data-batch
+                # }
                 
-                RoadAnomalyInput.objects.update_or_create(
-                    **lookup_fields,
-                    defaults=defaults
+                # RoadAnomalyInput.objects.update_or_create(
+                #     **lookup_fields,
+                #     defaults=defaults
+                # )
+
+                # Graciously creating an instance of RoadAnomalyInput (not saving yet)
+                entry = RoadAnomalyInput(
+                    anomaly = anomaly,
+                    latitude = latitude,
+                    longitude = longitude,
+                    timestamp = timestamp
                 )
 
+                bulk_entries.append(entry)
+
+            RoadAnomalyInput.objects.bulk_create(bulk_entries)
             queryset = RoadAnomalyInput.objects.all().order_by("id")
-            queryset_count_new = RoadAnomalyInput.objects.all().order_by("id").count
+            queryset_count_new = queryset.count
             # full_serializer = self.get_serializer(queryset, many = True)
 
             # # RoadAnomalyInferenceLogs.objects.all().delete()       
