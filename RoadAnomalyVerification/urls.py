@@ -35,11 +35,11 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
 
 
         if raw_data == "accept":
-            # predictions = pd.read_csv("predictions.csv")
-            # queryset_count_former = RoadAnomalyInput.objects.all().order_by("id").count
-            # df = pd.DataFrame(predictions)
-            # if df.empty:
-            #     return Response("No Predictions available", status=status.HTTP_400_BAD_REQUEST )
+            predictions = pd.read_csv("predictions.csv")
+            queryset_count_former = RoadAnomalyInput.objects.all().order_by("id").count
+            df = pd.DataFrame(predictions)
+            if df.empty:
+                return Response("No Predictions available", status=status.HTTP_400_BAD_REQUEST )
 
             # for i in range(df.shape[0]):
             #     row = df.iloc[i]   #Graciously getting each row of prediction information
@@ -75,7 +75,7 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
             # return Response(full_serializer.data, status = status.HTTP_200_OK)
             # To Graciously later include inference data into RoadAnomalyInput grouping identical instances first
             # Then Graciously delete all inference data and associated predictions
-            return Response(f"Verification message received")#, no of anomalies:{queryset.count}\n No of Anomalies(prev):{queryset_count_former}, No of Anomalies(current): {queryset_count_new}", status = status.HTTP_200_OK)  
+            return Response(f"Verification message received, no of predictions made: {df.shape[0]}")#, no of anomalies:{queryset.count}\n No of Anomalies(prev):{queryset_count_former}, No of Anomalies(current): {queryset_count_new}", status = status.HTTP_200_OK)  
             
             
 
