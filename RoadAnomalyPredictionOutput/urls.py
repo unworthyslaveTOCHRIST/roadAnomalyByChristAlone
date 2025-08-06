@@ -57,14 +57,15 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             for i in range(df.shape[0]):
                 row = df.iloc[i]   #Graciously getting each row of prediction information
                 
-                anomaly     =       row["predictions"]
-                confidence  =       row["confidence_in_%"]
-                latitude    =       row["latitude"]
-                longitude   =       row["longitude"]
+                anomaly                 =       row["predictions"]
+                confidence              =       row["confidence_in_%"]
+                latitude                =       row["latitude"]
+                longitude               =       row["longitude"]
+                inference_start_time    =       row["inference_start_time"]
 
                 data = {
                     "batch_id":None,
-                    "timestamp": str(datetime.now()),  # Or use str(datetime.now()) for uniform time
+                    "timestamp": inference_start_time ,  # Or use str(datetime.now()) for uniform time
                     "log_interval": None,
                     "acc_x": None,
                     "acc_y": None,

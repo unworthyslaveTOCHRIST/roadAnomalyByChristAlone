@@ -18,6 +18,7 @@ from sklearn.metrics import classification_report
 from collections import Counter
 
 from rest_framework.response import Response
+from rest_framework import status
 
 
 from ahrs.filters import Madgwick
@@ -185,6 +186,7 @@ def extract_features_windowed(df, fs, window_size, stride, filter_cfg=None):
         center_row = window.iloc[window_size // 2]
         feature_vector["latitude"] = round(center_row["latitude"],2)
         feature_vector["longitude"] = round(center_row["longitude"],2)
+        feature_vector["inference_start_time"] = center_row["timestamp"]
 
         for col in signal_columns:
             signal = window[col].values
@@ -270,14 +272,15 @@ def ml_pipeline(feature_engineered_df):
 
     if not os.path.exists(MODEL_PATH):
         print("🚫 Model file not found.")
-        return Response("Model file missing.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response("Model file missing.", status= status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     model = joblib.load(MODEL_PATH)
 
     latitude = feature_engineered_df["latitude"]
     longitude = feature_engineered_df["longitude"]
-    feature_engineered_df.drop(columns=["latitude","longitude"], inplace = True)
+    inference_start_time = feature_engineered_df["inference_start_time"]
+    feature_engineered_df.drop(columns=["latitude","longitude","inference_start_time"], inplace = True)
     inf_data = feature_engineered_df
     print(inf_data.head())
     # # print("Graciously before dropping incomplete rows",inf_data.info())
@@ -289,6 +292,7 @@ def ml_pipeline(feature_engineered_df):
     predictions_df["predictions"] = predictions
     predictions_df["latitude"]  = latitude
     predictions_df["longitude"] = longitude
+    predictions_df["inference_start_time"] = inference_start_time
 
     df_final = pd.DataFrame()
     for location_group_id, location_group in predictions_df.groupby(["latitude","longitude"]):
@@ -302,6 +306,7 @@ def ml_pipeline(feature_engineered_df):
         df_per_location["confidence_in_%"] = prediction_value * 100
         df_per_location["latitude"]  = location_group["latitude"].iloc[0]
         df_per_location["longitude"]  = location_group["longitude"].iloc[0]
+        df_per_location["inference_start_time"]  = location_group["inference_start_time"].iloc[0]
 
         df_final = pd.concat([df_final,df_per_location], ignore_index=True)
 
@@ -340,7 +345,7 @@ def update_input_main():
 if __name__ == "__main__":
     # inference_data = RoadAnomalyInferenceLogs.objects.order_by("id").values()
     # df = pd.DataFrame(inference_data)
-    # # print("Gracious output:", df.shape)
+    # print(df.columns)
     # data_globally_aligned = align_to_global_frame(df)
     # batched_df = fix_batches(data_globally_aligned)
     # engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)

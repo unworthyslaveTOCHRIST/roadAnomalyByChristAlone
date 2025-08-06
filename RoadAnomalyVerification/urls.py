@@ -44,10 +44,10 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
             for i in range(df.shape[0]):
                 row = df.iloc[i]   #Graciously getting each row of prediction information
 
-                anomaly     =       f"{row['predictions']} {row['confidence_in_%']}%"
-                latitude    =       row["latitude"]
-                longitude   =       row["longitude"]
-                timestamp   =       str(datetime.now())
+                anomaly                 =       f"{row['predictions']} {row['confidence_in_%']}%"
+                latitude                =       row["latitude"]
+                longitude               =       row["longitude"]
+                timestamp               =       row["inference_start_time"]
 
                 # Graciously defining lookup fields based on which duplicated-location entries are prevented
                 lookup_fields = {

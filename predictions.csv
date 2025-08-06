@@ -1,2 +1,2 @@
-predictions,confidence_in_%,latitude,longitude
-no-movement,100.0,7.3,5.13
+predictions,confidence_in_%,latitude,longitude,inference_start_time
+no-movement,100.0,7.3,5.13,2025-06-27 13:04:19.075860

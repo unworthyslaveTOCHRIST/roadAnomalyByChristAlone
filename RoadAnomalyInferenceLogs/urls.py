@@ -73,7 +73,7 @@ class RoadAnomalyInferenceLogsViewSet(viewsets.ModelViewSet):
                 continue
 
         print(f"✅ Successfully saved {len(saved_items)} of {line_count} lines.")
-        return Response(saved_items, status=status.HTTP_201_CREATED)
+        return Response(f"✅ Received {len(saved_items)} more rows, Current Inference Size : {RoadAnomalyInferenceLogs.objects.all().count()} rows", status=status.HTTP_201_CREATED)
 
 
 
