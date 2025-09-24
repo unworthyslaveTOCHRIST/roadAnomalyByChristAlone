@@ -34,7 +34,7 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-        if raw_data == "accept":
+        if raw_data == "accept" or raw_data == "accept_without_data_wipe":
             predictions = pd.read_csv("predictions.csv")
             queryset_count_former = RoadAnomalyInput.objects.all().order_by("id").count()
             df = pd.DataFrame(predictions)
@@ -70,10 +70,12 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
             queryset = RoadAnomalyInput.objects.all().order_by("id")
             queryset_count_new = RoadAnomalyInput.objects.all().order_by("id").count()
             # full_serializer = self.get_serializer(queryset, many = True)
-
-            RoadAnomalyInferenceLogs.objects.all().delete() 
+            if raw_data == "accept_without_data_wipe":
+                pass
+            elif raw_data == "accept":
+                RoadAnomalyInferenceLogs.objects.all().delete() 
+            
             inference_data_count = RoadAnomalyInferenceLogs.objects.all().count() if RoadAnomalyInferenceLogs.objects.all().count()  >  0 else "No"
-  
             RoadAnomalyPredictionOutput.objects.all().delete() 
             predictions_count = RoadAnomalyPredictionOutput.objects.all().count() if RoadAnomalyPredictionOutput.objects.all().count()  >  0 else "No"     
 
@@ -82,12 +84,15 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
             
             
 
-        elif raw_data == "reject":
+        elif raw_data == "reject" or raw_data == "reject_without_data_wipe":
 
             # To only Graciously delete all inference data and associated predictions
-            RoadAnomalyInferenceLogs.objects.all().delete() 
+
+            if raw_data == "accept_without_data_wipe":
+                pass
+            elif raw_data == "accept":
+                RoadAnomalyInferenceLogs.objects.all().delete()     
             inference_data_count = RoadAnomalyInferenceLogs.objects.all().count() if RoadAnomalyInferenceLogs.objects.all().count()  >  0 else "None"
-  
             RoadAnomalyPredictionOutput.objects.all().delete() 
             predictions_count = RoadAnomalyPredictionOutput.objects.all().count() if RoadAnomalyPredictionOutput.objects.all().count()  >  0 else "None"     
 
