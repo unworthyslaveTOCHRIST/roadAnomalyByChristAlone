@@ -33,7 +33,7 @@ class RoadAnomalyInferenceLogsViewSet(viewsets.ModelViewSet):
 
         if raw_data == "clean_up_inference_database":
             RoadAnomalyInferenceLogs.objects.all().delete()
-            return Response(f"Inference database emptied", status=status.HTTP_201_CREATED)
+            return Response(f" Inference database emptied ", status=status.HTTP_201_CREATED)
 
         if not isinstance(raw_data, str):
             return Response({"error": "Invalid data format. Expected plain text."},
