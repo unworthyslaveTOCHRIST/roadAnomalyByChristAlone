@@ -104,6 +104,7 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             batched_df = fix_batches(data_globally_aligned)
             engineered_df = apply_feature_extraction_across_all_identical_anomaly_batches(batched_df)
             predictions = ml_pipeline(engineered_df)
+            pd.DataFrame().to_csv("predictions.csv")
             predictions.to_csv("predictions.csv",index=False)
 
             return Response("Gracious Inference Data Successfully Prepocessed and Ready for Prediction", status=status.HTTP_200_OK)
