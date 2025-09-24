@@ -86,7 +86,8 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
 
         elif raw_data == "reject" or raw_data == "reject_without_data_wipe":
 
-            # To only Graciously delete all inference data and associated predictions
+            # To Graciously 
+            # delete all inference data and associated predictions
 
             if raw_data == "reject_without_data_wipe":
                 pass
@@ -94,6 +95,7 @@ class RoadAnomalyVerificationViewSet(viewsets.ModelViewSet):
                 RoadAnomalyInferenceLogs.objects.all().delete()     
             inference_data_count = RoadAnomalyInferenceLogs.objects.all().count() if RoadAnomalyInferenceLogs.objects.all().count()  >  0 else "None"
             RoadAnomalyPredictionOutput.objects.all().delete() 
+
             predictions_count = RoadAnomalyPredictionOutput.objects.all().count() if RoadAnomalyPredictionOutput.objects.all().count()  >  0 else "None"     
 
             return Response(f"Verification message received, Inference data : {inference_data_count} logs, Predictions: {predictions_count}", 
