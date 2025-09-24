@@ -50,6 +50,9 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             # Graciously sending predictions over to a receiving end-point
 
             predictions = pd.read_csv("predictions.csv")
+            inference_df = pd.DataFrame(RoadAnomalyInferenceLogs.objects.all().values(), index=False)
+            inference_df.to_csv("inference_akure_road_block.csv")
+
             df = pd.DataFrame(predictions)
             if df.empty:
                 return Response("No Predictions available", status=status.HTTP_400_BAD_REQUEST )
