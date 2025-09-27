@@ -21,4 +21,4 @@ class RoadAnomalyManualDataCollection(models.Model):
     anomaly = models.TextField()
 
     def __str__(self):
-        return f"Road Anomaly Manually Collected Data received from App @{self.timestamp}  | speed : {self.speed}"
+        return f"Road Anomaly Manually Collected Data received from Embedded Hardware Unit @{self.timestamp}  | speed : {self.speed}"

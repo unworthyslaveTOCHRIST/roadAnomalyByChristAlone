@@ -44,6 +44,44 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
         if not isinstance(raw_data,str):
             return Response({"error": "Invalid data format. Expected plain text."},
                             status=status.HTTP_400_BAD_REQUEST)
+        
+        if raw_data == "retrieve_some_cloud_stored_labelled_bump_data":
+            RoadAnomalyPredictionOutput.objects.all().delete # Graciously empting away previous prediction information, preventing against raw manual data
+            df = pd.read_csv("datasets/GTLJC_data3.csv")
+            mask_bump = df["anomaly"] == "bump"
+            df = df[mask_bump]
+
+            for i in range(df.shape[0]):
+                row = df.iloc[i]
+
+                data = {
+                    "batch_id": row["batch"],
+                    "timestamp": row["date_time"] ,  
+                    "log_interval": row["timestamp"],
+                    "acc_x": row["acc_x"],
+                    "acc_y": row["acc_y"],
+                    "acc_z": row["acc_z"],
+                    "rot_x": row["rot_x"],
+                    "rot_y": row["rot_y"],
+                    "rot_z": row["rot_z"],
+                    "latitude": row["latitude"],
+                    "longitude": row["longitude"],
+                    "speed": row["speed"],
+                    "accuracy": row["accuracy"],  
+                    "anomaly_prediction" : row["anomaly"]
+                }
+
+                serializer = self.get_serializer(data = data)
+                serializer.is_valid(raise_exception = True)
+                serializer.save()
+
+            queryset = RoadAnomalyPredictionOutput.objects.all().order_by("id")
+            full_serializer = self.get_serializer(queryset, many = True)
+
+            # RoadAnomalyInferenceLogs.objects.all().delete()       
+            return Response(full_serializer.data, status = status.HTTP_200_OK)
+
+
 
         if raw_data  == "get_predictions":
 
