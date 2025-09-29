@@ -35,7 +35,7 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
             print(f"📥 Line {i + 1}/{line_count}: {line}")
             try:
                 parts = [p.strip() for p in line.split(',')]
-                if len(parts) < 13:
+                if len(parts) < 14:
                     print(f"❌ Skipping line {i + 1} (only {len(parts)} parts): {line}")
                     continue
 
@@ -52,7 +52,8 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
                     "latitude": float(parts[8]),
                     "longitude": float(parts[9]),
                     "speed": float(parts[7]),
-                    "accuracy": float(parts[10]),  # Keep this as you intended
+                    "accuracy": float(parts[10]),  # Keep this as you intended,
+                    "anomaly": float(parts[13]), 
                 }
 
                 serializer = self.get_serializer(data=data)
@@ -65,7 +66,7 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
                 continue
 
         print(f"✅ Successfully saved {len(saved_items)} of {line_count} lines.")
-        return Response(f"Received {len(saved_items)} more rows, Current Inference Size : {RoadAnomalyInferenceLogs.objects.all().count()} rows", status=status.HTTP_201_CREATED)
+        return Response(f"Received {len(saved_items)} more rows, Current Size of labelled (training) data : {RoadAnomalyManualDataCollection.objects.all().count()} rows", status=status.HTTP_201_CREATED)
 
 
 
