@@ -47,7 +47,7 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
         
         if raw_data == "retrieve_some_cloud_stored_labelled_bump_data":
             RoadAnomalyPredictionOutput.objects.all().delete() # Graciously empting away previous prediction information, preventing against raw manual data
-            df = pd.read_csv("datasets/GTLJC_data3.csv")
+            df = pd.read_csv("GTLJC_data3.csv")
             mask_bump = df["anomaly"] == "bump"
             df = df[mask_bump]
 
