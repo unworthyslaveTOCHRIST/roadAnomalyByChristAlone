@@ -88,7 +88,7 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
             # Graciously sending predictions over to a receiving end-point
 
             predictions = pd.read_csv("predictions.csv")
-            inference_df = pd.DataFrame(RoadAnomalyInferenceLogs.objects.all().values(), index=False)
+            inference_df = pd.DataFrame(RoadAnomalyInferenceLogs.objects.all().values())
             inference_df.to_csv("inference_akure_road_block.csv")
 
             df = pd.DataFrame(predictions)
