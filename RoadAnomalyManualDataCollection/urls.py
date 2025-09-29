@@ -65,9 +65,11 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
                 print(f"⚠️ Error in line {i + 1}: {line}\n  ↳ Exception: {e}")
                 continue
 
-        print(f"✅ Successfully saved {len(saved_items)} of {line_count} lines.")
-        return Response(f"Received {len(saved_items)} more rows, Current Size of labelled (training) data : {RoadAnomalyManualDataCollection.objects.all().count()} rows", status=status.HTTP_201_CREATED)
+        queryset = RoadAnomalyManualDataCollection.objects.all().order_by("id")
+        full_serializer = self.get_serializer(queryset, many = True)
 
+        return Response(full_serializer.data, status = status.HTTP_200_OK)
+    
 
 
 router = routers.DefaultRouter()

@@ -53,7 +53,6 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
 
             for i in range(df.shape[0]):
                 row = df.iloc[i]
-
                 data = {
                     "batch_id": row["batch"],
                     "timestamp": row["date_time"] ,  
