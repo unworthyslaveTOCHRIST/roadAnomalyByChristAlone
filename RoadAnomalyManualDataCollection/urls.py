@@ -65,10 +65,8 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
                 print(f"⚠️ Error in line {i + 1}: {line}\n  ↳ Exception: {e}")
                 continue
 
-        queryset = RoadAnomalyManualDataCollection.objects.all().order_by("id")
-        full_serializer = self.get_serializer(queryset, many = True)
+        return Response(f"Received {len(saved_items)} more rows, Current Labelled Data Size : {RoadAnomalyManualDataCollection.objects.all().count()} rows", status=status.HTTP_201_CREATED)
 
-        return Response(full_serializer.data, status = status.HTTP_200_OK)
     
 
 
