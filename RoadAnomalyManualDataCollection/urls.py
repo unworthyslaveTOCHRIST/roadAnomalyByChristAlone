@@ -64,8 +64,8 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
             except Exception as e:
                 print(f"⚠️ Error in line {i + 1}: {line}\n  ↳ Exception: {e}")
                 continue
-
-        return Response(f"Received {len(saved_items)} more rows, Current Labelled Data Size : {RoadAnomalyManualDataCollection.objects.all().count()} rows", status=status.HTTP_201_CREATED)
+        return Response(f" Supposed to receive {line_count} lines, each with {len(parts)} fields", status=status.HTTP_201_CREATED)
+        #return Response(f"Received {len(saved_items)} more rows, Current Labelled Data Size : {RoadAnomalyManualDataCollection.objects.all().count()} rows", status=status.HTTP_201_CREATED)
 
     
 
