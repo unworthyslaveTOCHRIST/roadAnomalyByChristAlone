@@ -41,7 +41,7 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
             print(f"📥 Line {i + 1}/{line_count}: {line}")
             try:
                 parts = [p.strip() for p in line.split(',')]
-                if len(parts) <= 14:
+                if len(parts) < 14:
                     print(f"❌ Skipping line {i + 1} (only {len(parts)} parts): {line}")
                     continue
 
