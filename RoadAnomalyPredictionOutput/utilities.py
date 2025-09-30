@@ -184,8 +184,8 @@ def extract_features_windowed(df, fs, window_size, stride, filter_cfg=None):
         window = df.iloc[start:start + window_size]
         feature_vector = {}
         center_row = window.iloc[window_size // 2]
-        feature_vector["latitude"] = round(center_row["latitude"],3)
-        feature_vector["longitude"] = round(center_row["longitude"],3)
+        feature_vector["latitude"] = round(center_row["latitude"],2)
+        feature_vector["longitude"] = round(center_row["longitude"],2)
         feature_vector["inference_start_time"] = center_row["timestamp"]
 
         for col in signal_columns:
