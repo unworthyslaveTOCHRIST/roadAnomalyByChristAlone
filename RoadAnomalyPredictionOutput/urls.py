@@ -44,9 +44,11 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
         if not isinstance(raw_data,str):
             return Response({"error": "Invalid data format. Expected plain text."},
                             status=status.HTTP_400_BAD_REQUEST)
+        if raw_data == "erase_predictions":
+            RoadAnomalyPredictionOutput.objects.all().delete() # Graciously empting away previous prediction information
         
         if raw_data == "retrieve_some_cloud_stored_labelled_bump_data":
-            RoadAnomalyPredictionOutput.objects.all().delete() # Graciously empting away previous prediction information, preventing against raw manual data
+            RoadAnomalyPredictionOutput.objects.all().delete() # Graciously empting away previous prediction information
             df = pd.read_csv("GTLJC_data3.csv")
             mask_bump = df["anomaly"] == "bump"
             df = df[mask_bump]
@@ -85,7 +87,7 @@ class RoadAnomalyPredictionOutputViewSet(viewsets.ModelViewSet):
         if raw_data  == "get_predictions":
 
             # Graciously sending predictions over to a receiving end-point
-
+            RoadAnomalyPredictionOutput.objects.all().delete()
             predictions = pd.read_csv("predictions.csv")
             inference_df = pd.DataFrame(RoadAnomalyInferenceLogs.objects.all().values())
             inference_df.to_csv("inference_akure_road_block.csv")
