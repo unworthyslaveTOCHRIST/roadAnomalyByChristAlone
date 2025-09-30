@@ -35,7 +35,7 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
             print(f"📥 Line {i + 1}/{line_count}: {line}")
             try:
                 parts = [p.strip() for p in line.split(',')]
-                if len(parts) < 14:
+                if len(parts) < 15:
                     print(f"❌ Skipping line {i + 1} (only {len(parts)} parts): {line}")
                     continue
 
@@ -63,9 +63,7 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
 
             except Exception as e:
                 print(f"⚠️ Error in line {i + 1}: {line}\n  ↳ Exception: {e}")
-                # continue
-                return Response(f"⚠️ Error in line {i + 1}: {line}\n  ↳ Exception: {e}", status=status.HTTP_400_BAD_REQUEST)
-                
+                continue
 
         return Response(f"Received {len(saved_items)} more rows, Current Labelled Data Size : {RoadAnomalyManualDataCollection.objects.all().count()} rows", status=status.HTTP_201_CREATED)
 
