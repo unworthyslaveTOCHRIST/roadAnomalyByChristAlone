@@ -23,6 +23,7 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         raw_data = request.data
+
         if not isinstance(raw_data, str):
             return Response({"error": "Invalid data format. Expected plain text."},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -31,7 +32,12 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
         line_count = len(lines)
         saved_items = []
 
+        
+        with open("inference_akure_road_block.csv","w", encoding="utf-8") as file:
+            file.write(raw_data.strip() + "\n")
+
         for i, line in enumerate(lines):
+
             print(f"📥 Line {i + 1}/{line_count}: {line}")
             try:
                 parts = [p.strip() for p in line.split(',')]
@@ -53,7 +59,7 @@ class RoadAnomalyManualDataCollectionViewSet(viewsets.ModelViewSet):
                     "longitude": float(parts[9]),
                     "speed": float(parts[7]),
                     "accuracy": float(parts[10]),  # Keep this as you intended,
-                    "anomaly": parts[13], 
+                    "anomaly": parts[13]
                 }
 
                 serializer = self.get_serializer(data=data)
